@@ -1,5 +1,4 @@
 import React from 'react';
-import { changeMode } from '@/store/features/user/userSlice';
 import { Stack, Box, Typography, IconButton, TypographyVariant, SxProps, Theme } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import { RootState, useAppDispatch, useAppSelector } from '@/store';
@@ -98,7 +97,7 @@ const TemplateTester = () => {
       gap={2}
     >
       <Typography variant="h3">{type}</Typography> {func}
-      <IconButton onClick={() => dispatch(changeMode())} sx={{ position: 'absolute', top: 10, right: 10 }}>
+      <IconButton sx={{ position: 'absolute', top: 10, right: 10 }}>
         <Brightness4Icon
           sx={{
             transition: 'transform 0.4s',

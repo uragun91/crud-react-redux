@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import store from './store';
 import React from 'react';
 import App from './App';
-import './main.scss';
+import './styles/main.scss';
 
 const root = document.createElement('div');
 document.body.insertAdjacentElement('afterbegin', root);

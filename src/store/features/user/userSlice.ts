@@ -1,9 +1,12 @@
-import { apiLogin } from '@/services/user.service';
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { userLoginThunk } from './thunks';
+import { LoginResponseData } from '@/types';
 
 const initialState = {
-  token: null,
+  accessToken: '',
+  refreshToken: '',
   isLoggingIn: false,
+  loginError: '',
   user: null,
   mode: localStorage.getItem('mode')
     ? localStorage.getItem('mode')
@@ -16,38 +19,28 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setCredentials: (state, action) => {
-      state.token = action.payload.token;
-      state.user = action.payload.user;
+    setCredentials: (state, action: PayloadAction<LoginResponseData>) => {
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
     },
-    setToken: (state, action) => {
-      state.token = action.payload;
-    },
-    changeMode: (state) => {
-      if (state.mode === 'light') {
-        state.mode = 'dark';
-        localStorage.setItem('mode', 'dark');
-      } else {
-        state.mode = 'light';
-        localStorage.setItem('mode', 'light');
-      }
-    },
-    loginSuccessful: (state) => {
-      state.isLoggingIn = false;
-    },
-
-    login: (state, action) => {
-      state.isLoggingIn = true;
-
-      console.log('GGGGGGGGG');
-
-      apiLogin(action.payload.username, action.payload.password).catch((result: any) => {
-        dispatchEvent(loginSuccessful());
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(userLoginThunk.pending, (state) => {
+        state.loginError = '';
+        state.isLoggingIn = true;
+      })
+      .addCase(userLoginThunk.fulfilled, (state, action) => {
+        state.isLoggingIn = false;
+        // update state with user or credentials
+      })
+      .addCase(userLoginThunk.rejected, (state, action) => {
+        state.isLoggingIn = false;
+        state.loginError = action.error.message ?? '';
       });
-    },
   },
 });
 
-export const { setCredentials, setToken, changeMode, login } = userSlice.actions;
+export const { setCredentials } = userSlice.actions;
 
 export default userSlice.reducer;

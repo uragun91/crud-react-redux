@@ -1,10 +1,11 @@
 import React from 'react';
-import { Container, FormControl, FormHelperText, Input, InputLabel } from '@mui/material';
+import { Alert, Container, FormControl, FormHelperText, Input, InputLabel } from '@mui/material';
 import styles from './Login.module.scss';
 import { useFormik } from 'formik';
 import { RootState, useAppDispatch, useAppSelector } from '@/store';
-import { login } from '@/store/features/user/userSlice';
 import { LoadingButton } from '@mui/lab';
+import { userLoginThunk } from '@/store/features/user/thunks';
+import { useNavigate } from 'react-router-dom';
 
 type LoginFormData = { username: string; password: string };
 
@@ -26,7 +27,10 @@ const validateForm = (values: LoginFormData): Partial<LoginFormData> => {
 
 const Login = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const isLoggignIn = useAppSelector((state: RootState) => state.user.isLoggingIn);
+  const loginError = useAppSelector((state) => state.user.loginError);
 
   const formik = useFormik({
     initialValues: {
@@ -36,9 +40,14 @@ const Login = () => {
     validateOnMount: true,
     validate: validateForm,
     onSubmit: (values) => {
-      dispatch(login(values));
-
-      console.log(JSON.stringify(values, null, 2));
+      dispatch(userLoginThunk(values))
+        .unwrap()
+        .then(() => {
+          navigate('/home');
+        })
+        .catch(() => {
+          console.log('BBBBBBBB fail');
+        });
     },
   });
 
@@ -79,6 +88,8 @@ const Login = () => {
           Submit
         </LoadingButton>
       </form>
+
+      {loginError && <Alert severity="error">{loginError}</Alert>}
     </Container>
   );
 };

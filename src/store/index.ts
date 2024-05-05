@@ -1,13 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import userReducer from '@/store/features/user/userSlice';
-import { counterReducer } from '@/store/features/counterSlice';
+import articleReducer from '@/store/features/article/articleSlice';
 
 const store = configureStore({
   reducer: {
     // Add your reducers here
-    counter: counterReducer,
     user: userReducer,
+    article: articleReducer,
   },
 });
 
